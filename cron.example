@@ -1,2 +1,2 @@
-0 5 * * * cd /home/redditbot/bbbot; python BBbot.py --daily
-0 * * * * cd /home/redditbot/bbbot; python BBbot.py --hourly
+0 5 * * * cd /home/redditbot/bbbot; python BBbot.py topical
+0 * * * * cd /home/redditbot/bbbot; python BBbot.py discussion

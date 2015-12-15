@@ -22,10 +22,10 @@ def tryPost(postType):
     success = False
     while (datetime.datetime.now()-attempt_start) < datetime.timedelta(hours=2):
         try:
-            if postType == 'hourly':
-                makeDailyPost()
-            elif postType == 'daily':
-                makeOtherPost()
+            if postType == 'discussion':
+                makeDiscussionPost()
+            elif postType == 'topical':
+                makeTopicalPost()
             success = True
             break
         except:
@@ -36,9 +36,9 @@ def tryPost(postType):
         reportFailure(postType)
 
 def reportFailure(failedPost):
-    if failedPost == 'daily':
+    if failedPost == 'topical':
         subject = "Today's topical post has failed"
-    elif failedPost == 'hourly':
+    elif failedPost == 'discussion':
         subject = "Today's daily discussion post has failed"
     else:
         subject = failedPost
@@ -65,16 +65,16 @@ def reportFailure(failedPost):
     smtpserver.sendmail(sender, recipients, msg.as_string())
     smtpserver.close()
 
-def makeDailyPost():
-    if not shouldDailyPost():
+def makeDiscussionPost():
+    if not shouldDiscussionPost():
         print "Daily post already made"
         return
     title = config.get('daily','title')
     body = config.get('daily','body')
     submission = r.submit(subreddit,datetime.datetime.strftime(datetime.datetime.now(pytz.timezone('US/Eastern')), title),text=body).sticky()
 
-def makeOtherPost():
-    # Get the other post from the config file
+def makeTopicalPost():
+    # Get the topical post from the config file
     week   = ['Monday',
               'Tuesday',
               'Wednesday',
@@ -91,7 +91,7 @@ def makeOtherPost():
         body = body_list[i]
         # Check to see if we should be submitting this post today. This is important to do here, in case one post
         # is submitted and another fails. We don't want to repost both of them
-        if not shouldOtherPost(title):
+        if not shouldTopicalPost(title):
             print("We've already posted "+title+ " recently.")
             return
         submission = r.submit(subreddit,title,text=body)
@@ -114,7 +114,7 @@ def getPostContent(weekday):
         raise Exception('More post titles than bodies. Configuration problem')
     return title_list,body_list
 
-def shouldDailyPost():
+def shouldDiscussionPost():
     username = config.get('config','bot_username')
     user = r.get_redditor(username)
     now = datetime.datetime.now()
@@ -128,7 +128,7 @@ def shouldDailyPost():
             shouldPost = False
     return shouldPost
 
-def shouldOtherPost(title):
+def shouldTopicalPost(title):
     username = config.get('config','bot_username')
     user = r.get_redditor(username)
     now = datetime.datetime.now()
