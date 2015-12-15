@@ -48,9 +48,12 @@ def reportFailure(failedPost):
         if "fail_email" in items[0]:
             email_list.append(items[1])
     print email_list
-    emailConfigFile = 'smtp.ini'
-    emailConfig = ConfigParser.ConfigParser()
-    emailConfig.read(emailConfigFile)
+    try:
+        emailConfigFile = 'smtp.ini'
+        emailConfig = ConfigParser.ConfigParser()
+        emailConfig.read(emailConfigFile)
+    except:
+        print("No email account configured, cannot send email.")
     sender = emailConfig.get('smtp','username')
     password = emailConfig.get('smtp','password')
     server = emailConfig.get('smtp','server')
@@ -60,7 +63,6 @@ def reportFailure(failedPost):
     msg['From'] = "Bodybuilding Bot <"+sender+">"
     msg['To'] = ", ".join(recipients)
     smtpserver = smtplib.SMTP_SSL(server, 465)
-    smtpserver.set_debuglevel(1)
     smtpserver.login(sender,password)
     smtpserver.sendmail(sender, recipients, msg.as_string())
     smtpserver.close()
