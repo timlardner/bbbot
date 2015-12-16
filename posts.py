@@ -78,7 +78,9 @@ def makeDiscussionPost():
         return
     title = config.get('daily','title')
     body = config.get('daily','body')
-    submission = r.submit(subreddit,datetime.datetime.strftime(datetime.datetime.now(pytz.timezone('US/Eastern')), title),text=body).sticky()
+    submission = r.submit(subreddit,datetime.datetime.strftime(datetime.datetime.now(pytz.timezone('US/Eastern')), title),text=body)
+    submission.sticky()
+    submission.set_suggested_sort(sort='new')
 
 def makeTopicalPost():
     # Get the topical post from the config file
