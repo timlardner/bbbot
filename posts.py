@@ -69,7 +69,6 @@ def reportFailure(failedPost):
 
 def makeDiscussionPost():
     if not shouldDiscussionPost():
-        print "Daily post already made"
         return
     title = config.get('daily','title')
     body = config.get('daily','body')
@@ -128,6 +127,7 @@ def shouldDiscussionPost():
         # time requirement to every 22.5 hours. This means that on the hour it's supposed to post, it can.
         if 'Daily Discussion Thread' in submission.title and time_delta < datetime.timedelta(hours=22.5):
             shouldPost = False
+            print "Daily post already made "+str(time_delta)+" ago"
     return shouldPost
 
 def shouldTopicalPost(title):
