@@ -6,7 +6,8 @@ import datetime
 import pytz
 import smtplib
 from email.mime.text import MIMEText
-
+import logging
+from logging.config import fileConfig
 
 configFile = "bbbot.ini"
 config = ConfigParser.ConfigParser()
@@ -15,7 +16,12 @@ subreddit = config.get('config', 'subreddit')
 r = praw.Reddit("New application for /r/bodybuilding by /u/timlardner - v2.0 alpha")
 o = OAuth2Util(r)
 o.refresh()
-
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+log = logging.getLogger()
+handler = logging.FileHandler(config.get('logging', 'log_file'))
+handler.setFormatter(formatter)
+log.addHandler(handler)
+log.setLevel(config.get('logging', 'log_level'))
 
 def tryPost(postType):
     attempt_start = datetime.datetime.now()
@@ -28,8 +34,9 @@ def tryPost(postType):
                 makeTopicalPost()
             success = True
             break
-        except:
-            print("Failed to make daily post. Waiting 15 minutes to retry")
+        except Exception as e:
+            logging.warning(str(e))
+            logging.warning("Failed to make daily post. Waiting 15 minutes to retry")
             sleep(15*60) #Sleep in seconds
     if not success:
         # Email failure status
@@ -47,13 +54,12 @@ def reportFailure(failedPost):
     for items in config_list:
         if "fail_email" in items[0]:
             email_list.append(items[1])
-    print email_list
     try:
         emailConfigFile = 'smtp.ini'
         emailConfig = ConfigParser.ConfigParser()
         emailConfig.read(emailConfigFile)
     except:
-        print("No email account configured, cannot send email.")
+        logging.error("No email account configured, cannot send email.")
     sender = emailConfig.get('smtp','username')
     password = emailConfig.get('smtp','password')
     server = emailConfig.get('smtp','server')
@@ -93,7 +99,7 @@ def makeTopicalPost():
         # Check to see if we should be submitting this post today. This is important to do here, in case one post
         # is submitted and another fails. We don't want to repost both of them
         if not shouldTopicalPost(title):
-            print("We've already posted "+title+ " recently.")
+            logging.info("We've already posted "+title + " recently.")
             return
         submission = r.submit(subreddit,title,text=body)
 
@@ -127,7 +133,8 @@ def shouldDiscussionPost():
         # time requirement to every 22.5 hours. This means that on the hour it's supposed to post, it can.
         if 'Daily Discussion Thread' in submission.title and time_delta < datetime.timedelta(hours=22.5):
             shouldPost = False
-            print "Daily post already made "+str(time_delta)+" ago"
+            hours = time_delta.total_seconds() // 3600
+            logging.info("Daily post already made "+str(int(hours))+" hours ago")
     return shouldPost
 
 def shouldTopicalPost(title):

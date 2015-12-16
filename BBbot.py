@@ -1,8 +1,7 @@
 from posts import tryPost
 import sys
 
-valid_arguments = ['topical','discussion']
-
+valid_arguments = ['topical', 'discussion']
 
 if len(sys.argv) != 2:
     raise Exception("Incorrect number of argument received")

@@ -1,3 +1,4 @@
 oauth.ini
 smtp.ini
 *.pyc
+*.log
