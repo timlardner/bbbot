@@ -74,11 +74,15 @@ def reportFailure(failedPost):
     smtpserver.close()
 
 def makeDiscussionPost():
-    if not shouldDiscussionPost():
-        return
     title = config.get('daily','title')
     body = config.get('daily','body')
-    submission = r.submit(subreddit,datetime.datetime.strftime(datetime.datetime.now(pytz.timezone('US/Eastern')), title),text=body)
+    postTitle = datetime.datetime.strftime(datetime.datetime.now(pytz.timezone('US/Eastern')), title)
+    shouldPost, leapDay = shouldDiscussionPost(postTitle)
+    if not shouldPost:
+        return
+    if leapDay:
+        body = 'Leap day motherfuckers\n\n'+body
+    submission = r.submit(subreddit,postTitle,text=body)
     submission.sticky()
     submission.set_suggested_sort(sort='new')
 
@@ -123,11 +127,12 @@ def getPostContent(weekday):
         raise Exception('More post titles than bodies. Configuration problem')
     return title_list,body_list
 
-def shouldDiscussionPost():
+def shouldDiscussionPost(postTitle):
     username = config.get('config','bot_username')
     user = r.get_redditor(username)
     now = datetime.datetime.now()
     shouldPost = True
+    leapDay = False
     for submission in user.get_submitted(limit=14):
         post_time = datetime.datetime.fromtimestamp(int(submission.created_utc))
         time_delta = now - post_time
@@ -137,7 +142,9 @@ def shouldDiscussionPost():
             shouldPost = False
             hours = time_delta.total_seconds() // 3600
             logging.info("Daily post already made "+str(int(hours))+" hours ago")
-    return shouldPost
+        if postTitle == submission.title:
+            leapDay = True
+    return shouldPost, leapDay
 
 def shouldTopicalPost(title):
     username = config.get('config','bot_username')
