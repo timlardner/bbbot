@@ -141,7 +141,7 @@ def shouldDiscussionPost(postTitle):
             shouldPost = False
             hours = time_delta.total_seconds() // 3600
             logging.info("Daily post already made "+str(int(hours)+1)+" hours ago")
-            return
+            return shouldPost, leapDay
         if postTitle == submission.title:
             leapDay = True
             logging.info("Daily post: Leap day")
