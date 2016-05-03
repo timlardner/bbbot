@@ -141,14 +141,13 @@ def shouldDiscussionPost(postTitle):
             shouldPost = False
             hours = time_delta.total_seconds() // 3600
             logging.info("Daily post already made "+str(int(hours)+1)+" hours ago")
-        if postTitle == submission.title:
+        if postTitle == submission.title and shouldPost is True:
             leapDay = True
             logging.info("Daily post: Leap day")
     return shouldPost, leapDay
 
 def shouldTopicalPost(title):
-    username = config.get('config','bot_username')
-    user = r.get_redditor(username)
+    user = r.get_me()
     now = datetime.datetime.now()
     shouldPost = True
     for submission in user.get_submitted(limit=14):
