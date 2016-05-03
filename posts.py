@@ -141,9 +141,10 @@ def shouldDiscussionPost(postTitle):
         if 'Daily Discussion Thread' in submission.title and time_delta < datetime.timedelta(hours=22.5):
             shouldPost = False
             hours = time_delta.total_seconds() // 3600
-            logging.info("Daily post already made "+str(int(hours))+" hours ago")
+            logging.info("Daily post already made "+str(int(hours)+1)+" hours ago")
         if postTitle == submission.title:
             leapDay = True
+            logging.info("Daily post: Leap day")
     return shouldPost, leapDay
 
 def shouldTopicalPost(title):
