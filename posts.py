@@ -81,7 +81,7 @@ def makeDiscussionPost():
     if not shouldPost:
         return
     if leapDay:
-        body = 'Leap day motherfuckers\n\n'+body
+        body = config.get('daily','leap') + '\n\n' + body
     submission = r.submit(subreddit,postTitle,text=body)
     submission.sticky()
     submission.set_suggested_sort(sort='new')
