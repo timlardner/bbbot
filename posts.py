@@ -26,7 +26,7 @@ log.setLevel(config.get('logging', 'log_level'))
 def tryPost(postType):
     attempt_start = datetime.datetime.now()
     success = False
-    while (datetime.datetime.now()-attempt_start) < datetime.timedelta(hours=2):
+    while (datetime.datetime.now()-attempt_start) < datetime.timedelta(minutes=30):
         try:
             if postType == 'discussion':
                 makeDiscussionPost()
@@ -37,7 +37,7 @@ def tryPost(postType):
         except Exception as e:
             logging.warning(str(e))
             logging.warning("Failed to make daily post. Waiting 15 minutes to retry")
-            sleep(15*60) #Sleep in seconds
+            sleep(5*60) #Sleep in seconds
     if not success:
         # Email failure status
         reportFailure(postType)
