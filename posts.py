@@ -14,7 +14,7 @@ config = ConfigParser.ConfigParser()
 config.read(configFile)
 subreddit = config.get('config', 'subreddit')
 r = praw.Reddit("New application for /r/bodybuilding by /u/timlardner - v2.0 alpha")
-o = OAuth2Util(r)
+o = OAuth2Util(r, server_mode=True)
 o.refresh()
 formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
 log = logging.getLogger()
@@ -128,8 +128,7 @@ def getPostContent(weekday):
     return title_list,body_list
 
 def shouldDiscussionPost(postTitle):
-    username = config.get('config','bot_username')
-    user = r.get_redditor(username)
+    user = r.get_me()
     now = datetime.datetime.now()
     shouldPost = True
     leapDay = False
