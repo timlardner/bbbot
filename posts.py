@@ -5,6 +5,7 @@ import ConfigParser
 import datetime
 import pytz
 import smtplib
+import re
 from email.mime.text import MIMEText
 import logging
 from logging.config import fileConfig
@@ -84,6 +85,8 @@ def makeDiscussionPost():
     if leapDay:
         body = config.get('daily','leap') + '\n\n' + body
     submission = r.submit(subreddit,postTitle,text=body)
+    tunaUrl = re.sub(r'https://www.reddit.com','http://reddit.ourtuna.com',submission.url)
+    submission.edit(submission.selftext+'\n\n[View this thread live]('+tunaUrl+').')
     submission.sticky()
     submission.set_suggested_sort(sort='new')
 
