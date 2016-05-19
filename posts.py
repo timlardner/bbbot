@@ -136,12 +136,12 @@ def shouldDiscussionPost(postTitle):
     now = datetime.datetime.now()
     shouldPost = True
     leapDay = False
-    for submission in user.get_submitted(limit=14):
+    for submission in user.get_submitted(limit=28):
         post_time = datetime.datetime.fromtimestamp(int(submission.created_utc))
         time_delta = now - post_time
         # We'll run this every hour. Since it takes a few seconds to process and make the post, we'll relax the
         # time requirement to every 22.5 hours. This means that on the hour it's supposed to post, it can.
-        if 'Daily Discussion Thread' in submission.title and time_delta < datetime.timedelta(hours=22.5):
+        if 'Daily Discussion Thread' in submission.title and time_delta < datetime.timedelta(hours=22.5) and submission.subreddit == subreddit:
             shouldPost = False
             hours = time_delta.total_seconds() // 3600
             logging.info("Daily post already made "+str(int(hours)+1)+" hours ago")
@@ -160,6 +160,6 @@ def shouldTopicalPost(title):
         time_delta = now - post_time
         # We only want to post each of these once a week. We'll settle for ensuring one of these threads hasn't been
         # posted in the last 5 days. Just in case.
-        if title in submission.title and time_delta < datetime.timedelta(days=5):
+        if title in submission.title and time_delta < datetime.timedelta(days=5) and submission.subreddit == subreddit:
             shouldPost = False
     return shouldPost
