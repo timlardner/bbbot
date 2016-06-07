@@ -85,7 +85,7 @@ def makeDiscussionPost():
     if leapDay:
         body = config.get('daily','leap') + '\n\n' + body
     submission = r.submit(subreddit,postTitle,text=body)
-    tunaUrl = re.sub(r'https://www.reddit.com','http://reddit.ourtuna.com',submission.url)
+    tunaUrl = re.sub(r'https://www.reddit.com','https://reddit.ourtuna.com',submission.url)
     submission.edit(submission.selftext+'\n\n[View this thread live]('+tunaUrl+').')
     submission.sticky()
     submission.set_suggested_sort(sort='new')
